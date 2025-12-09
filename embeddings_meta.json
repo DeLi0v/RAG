@@ -1,0 +1,86 @@
+[
+  {
+    "chunk_id": 0,
+    "source_file": "cloudflare.docx",
+    "source_path": "data\\cloudflare.docx",
+    "start_char": 0,
+    "end_char": 522
+  },
+  {
+    "chunk_id": 0,
+    "source_file": "test.docx",
+    "source_path": "data\\test.docx",
+    "start_char": 0,
+    "end_char": 4687
+  },
+  {
+    "chunk_id": 1,
+    "source_file": "test.docx",
+    "source_path": "data\\test.docx",
+    "start_char": 4688,
+    "end_char": 10872
+  },
+  {
+    "chunk_id": 2,
+    "source_file": "test.docx",
+    "source_path": "data\\test.docx",
+    "start_char": 10873,
+    "end_char": 15233
+  },
+  {
+    "chunk_id": 3,
+    "source_file": "test.docx",
+    "source_path": "data\\test.docx",
+    "start_char": 15234,
+    "end_char": 21270
+  },
+  {
+    "chunk_id": 4,
+    "source_file": "test.docx",
+    "source_path": "data\\test.docx",
+    "start_char": 21271,
+    "end_char": 25438
+  },
+  {
+    "chunk_id": 5,
+    "source_file": "test.docx",
+    "source_path": "data\\test.docx",
+    "start_char": 25439,
+    "end_char": 30017
+  },
+  {
+    "chunk_id": 6,
+    "source_file": "test.docx",
+    "source_path": "data\\test.docx",
+    "start_char": 30018,
+    "end_char": 33292
+  },
+  {
+    "chunk_id": 0,
+    "source_file": "Передача файлов между устройствами.docx",
+    "source_path": "data\\it\\Передача файлов между устройствами.docx",
+    "start_char": 0,
+    "end_char": 3541
+  },
+  {
+    "chunk_id": 1,
+    "source_file": "Передача файлов между устройствами.docx",
+    "source_path": "data\\it\\Передача файлов между устройствами.docx",
+    "start_char": 3542,
+    "end_char": 5176
+  },
+  {
+    "chunk_id": 0,
+    "source_file": "разрешенные сайты.txt",
+    "source_path": "data\\разрешенные сайты.txt",
+    "start_char": 0,
+    "end_char": 1919
+  },
+  {
+    "chunk_id": 0,
+    "source_file": "Список задач.xlsx",
+    "source_path": "data\\Список задач.xlsx",
+    "start_char": 0,
+    "end_char": 773
+  }
+]

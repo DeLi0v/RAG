@@ -1,0 +1,14 @@
+{
+  "source_path": "data\\test.docx",
+  "filename": "test.docx",
+  "file_type": ".docx",
+  "saved_text": "corpus\\test.txt",
+  "saved_meta": "corpus\\test.json",
+  "n_chars": 33436,
+  "n_words": 3290,
+  "converted_at": "2025-12-08T11:26:59.124370+00:00Z",
+  "author": null,
+  "created_at": null,
+  "language": null,
+  "n_tables": 1
+}

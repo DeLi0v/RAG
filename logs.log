@@ -1,0 +1,11 @@
+2025-12-08 15:32:58,031 - INFO - {"client": "<lmstudio.sync_api.Client object at 0x0000012937DA8EC0>", "event": "Websocket handling thread started", "thread_id": "Thread-1"}
+2025-12-08 15:32:58,325 - INFO - HTTP Request: GET http://127.0.0.1:41343/lmstudio-greeting "HTTP/1.1 200 OK"
+2025-12-08 15:32:58,591 - INFO - HTTP Request: GET ws://127.0.0.1:41343/embedding "HTTP/1.1 101 Switching Protocols"
+2025-12-08 15:32:58,592 - INFO - {"event": "Websocket session established", "ws_url": "ws://127.0.0.1:41343/embedding"}
+2025-12-08 15:32:58,862 - INFO - HTTP Request: GET ws://127.0.0.1:41343/llm "HTTP/1.1 101 Switching Protocols"
+2025-12-08 15:32:58,864 - INFO - {"event": "Websocket session established", "ws_url": "ws://127.0.0.1:41343/llm"}
+2025-12-08 15:56:06,362 - INFO - {"event": "Websocket closed.", "ws_url": "ws://127.0.0.1:41343/llm"}
+2025-12-08 15:56:06,362 - INFO - {"event": "Websocket session disconnected (ws://127.0.0.1:41343/llm)", "ws_url": "ws://127.0.0.1:41343/llm"}
+2025-12-08 15:56:06,365 - INFO - {"event": "Websocket closed.", "ws_url": "ws://127.0.0.1:41343/embedding"}
+2025-12-08 15:56:06,365 - INFO - {"event": "Websocket session disconnected (ws://127.0.0.1:41343/embedding)", "ws_url": "ws://127.0.0.1:41343/embedding"}
+2025-12-08 15:56:06,367 - INFO - {"client": "<lmstudio.sync_api.Client object at 0x0000012937DA8EC0>", "event": "Websocket thread terminated", "thread_id": "Thread-1"}

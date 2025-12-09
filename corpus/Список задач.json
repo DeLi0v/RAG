@@ -1,0 +1,14 @@
+{
+  "source_path": "data\\Список задач.xlsx",
+  "filename": "Список задач.xlsx",
+  "file_type": ".xlsx",
+  "saved_text": "corpus\\Список задач.txt",
+  "saved_meta": "corpus\\Список задач.json",
+  "n_chars": 773,
+  "n_words": 131,
+  "converted_at": "2025-12-08T11:26:59.173542+00:00Z",
+  "author": null,
+  "created_at": null,
+  "language": null,
+  "n_tables": 1
+}

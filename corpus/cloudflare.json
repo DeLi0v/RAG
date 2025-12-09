@@ -1,0 +1,14 @@
+{
+  "source_path": "data\\cloudflare.docx",
+  "filename": "cloudflare.docx",
+  "file_type": ".docx",
+  "saved_text": "corpus\\cloudflare.txt",
+  "saved_meta": "corpus\\cloudflare.json",
+  "n_chars": 526,
+  "n_words": 71,
+  "converted_at": "2025-12-08T11:26:58.714775+00:00Z",
+  "author": null,
+  "created_at": null,
+  "language": null,
+  "n_tables": 0
+}
