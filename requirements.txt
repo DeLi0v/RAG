@@ -1,5 +1,7 @@
-lmstudio
-docling
 numpy
+faiss-cpu # faiss-gpu
+lmstudio
+json
 tqdm
+docling
 chardet
