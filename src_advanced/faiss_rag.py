@@ -104,6 +104,30 @@ def build_prompt(question, chunks):
     return prompt
 
 
+def generate_similar_questions(question: str, model_llm, n: int = 5) -> list:
+    """
+    Генерирует несколько похожих вопросов.
+    Возвращает список строк.
+    """
+    prompt = (
+        f"Сделай {n} переформулировок или похожих вопросов к следующему:\n"
+        f'"{question}"\n'
+        f"Формат вывода: по одному вопросу на строку, без номеров, без пояснений."
+    )
+
+    response = model_llm.respond(prompt)
+
+    # Разбиваем на строки и чистим
+    variants = [
+        line.strip("-• ").strip() for line in response.split("\n") if line.strip()
+    ]
+
+    # Оставляем только строки, похожие на вопрос (эвристика)
+    variants = [v for v in variants if len(v) > 5]
+
+    return variants[:n]
+
+
 # ----------------------------
 # 4️⃣ Основная функция запроса
 # ----------------------------
@@ -115,17 +139,41 @@ def query_rag(question: str):
     # загрузка индекса и чанков
     index, embeddings, chunks_data = load_embeddings_faiss()
 
-    # эмбеддинг запроса
-    raw_vec = model_embed.embed(question)
-    query_vec = np.array(raw_vec, dtype="float32").reshape(1, -1)
+    # ➤ 1. Генерируем дополнительные запросы
+    similar_questions = generate_similar_questions(question, model_llm, n=5)
+    all_questions = [question] + similar_questions
 
-    # выбор релевантных чанков
-    top_chunks = select_relevant_chunks(query_vec, index, chunks_data)
+    print("\nСгенерированные вариации вопроса:")
+    for q in all_questions:
+        print(" •", q)
 
-    # формируем промпт
+    # ➤ 2. Получаем эмбеддинги всех вопросов
+    query_vectors = []
+    for q in all_questions:
+        raw_vec = model_embed.embed(q)
+        vec = np.array(raw_vec, dtype="float32").reshape(1, -1)
+        faiss.normalize_L2(vec)
+        query_vectors.append(vec)
+
+    # ➤ 3. Запускаем поиск FAISS для каждого вопроса
+    found_chunks = []
+    for vec in query_vectors:
+        chunks = select_relevant_chunks(vec, index, chunks_data)
+        found_chunks.extend(chunks)
+
+    # ➤ 4. Убираем дубликаты чанков по chunk_id + source_file
+    unique = {}
+    for ch in found_chunks:
+        key = f"{ch['source_file']}:{ch['chunk_id']}"
+        unique[key] = ch
+
+    # ➤ 5. Оставляем top_k лучших
+    top_chunks = list(unique.values())[:TOP_K]
+
+    # ➤ 6. Формируем промпт
     prompt = build_prompt(question, top_chunks)
 
-    # генерация ответа
+    # ➤ 7. Генерация ответа
     response = model_llm.respond(
         prompt,
         config={"temperature": 0.0},
