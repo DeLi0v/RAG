@@ -1,7 +1,7 @@
 numpy
-faiss-cpu # faiss-gpu
+hnswlib
 lmstudio
-json
 tqdm
 docling
 chardet
+jsonlines

@@ -1,15 +1,15 @@
 """
-advanced_rag.py
-RAG с:
-- FAISS для быстрого поиска
+advanced_rag.py — RAG-система c:
+- hnswlib (кроссплатформенный быстрый поиск)
 - фильтрацией по метаданным
 - управлением токенами
-- добавлением источников для LLM
+- расширением вариантов вопроса
+- LM Studio как LLM + embeddings
 """
 
 import json
 import numpy as np
-import faiss
+import hnswlib
 import lmstudio as lms
 from pathlib import Path
 
@@ -20,181 +20,141 @@ CHUNKS_JSONL = Path("chunks.jsonl")
 EMBEDDINGS_OUT = Path("embeddings.npz")
 EMBEDDING_MODEL_NAME = "text-embedding-nomic-embed-text-v1.5"
 LLM_MODEL_NAME = "mistral-7b-instruct"
+
 TOP_K = 10
 MAX_TOKENS = 1024
-TOKENS_QUESTION = 50  # оценка токенов вопроса
-SIM_THRESHOLD = 0.6  # минимальное сходство
-TOKEN_COEFF = 1.3  # 1 слово ≈ 1.3 токена
+TOKENS_QUESTION = 50
+SIM_THRESHOLD = 0.6
+TOKEN_COEFF = 1.3
 
 
 # ----------------------------
-# 1️⃣ Загрузка эмбеддингов и создание FAISS индекса
+# 1. Загрузка hnswlib индекса
 # ----------------------------
-def load_embeddings_faiss():
-    # эмбеддинги
-    lms.set_sync_api_timeout(600)
+def load_embeddings_hnsw():
     data = np.load(EMBEDDINGS_OUT)
     embeddings = data["embeddings"].astype("float32")
-    embedding_dim = embeddings.shape[1]
+    dim = embeddings.shape[1]
+    total = embeddings.shape[0]
 
-    # FAISS индекс
-    index = faiss.IndexFlatIP(embedding_dim)
-    faiss.normalize_L2(embeddings)  # для косинусного сходства
-    index.add(embeddings)
+    index = hnswlib.Index(space="cosine", dim=dim)
+    index.init_index(max_elements=total, ef_construction=200, M=48)
+    index.add_items(embeddings, np.arange(total))
+    index.set_ef(128)
 
-    # чанки
-    chunks_data = [
-        json.loads(line) for line in CHUNKS_JSONL.open("r", encoding="utf-8")
-    ]
+    chunks_data = [json.loads(l) for l in CHUNKS_JSONL.open("r", encoding="utf-8")]
 
-    return index, embeddings, chunks_data
+    return index, chunks_data
 
 
 # ----------------------------
-# 2️⃣ Выборка топ-K чанков с фильтрацией
+# 2. Поиск релевантных чанков
 # ----------------------------
-def select_relevant_chunks(
-    query_vector,
-    index,
-    chunks_data,
-    top_k=TOP_K,
-    max_tokens=MAX_TOKENS - TOKENS_QUESTION,
-    threshold=SIM_THRESHOLD,
-):
-    # нормализуем вектор для косинусного поиска
-    faiss.normalize_L2(query_vector)
-
-    # поиск top 50, потом отфильтруем по порогу
-    D, I = index.search(query_vector, 50)
-    selected_chunks = []
+def select_relevant_chunks(query_vec, index, chunks_data):
+    labels, distances = index.knn_query(query_vec, k=50)
+    selected = []
     total_tokens = 0
 
-    for score, idx in zip(D[0], I[0]):
-        if score < threshold:
+    for idx, dist in zip(labels[0], distances[0]):
+        score = 1 - dist  # cosine → similarity
+
+        if score < SIM_THRESHOLD:
             continue
+
         chunk = chunks_data[idx]
 
-        # фильтрация по метаданным (пример: язык русский)
         if chunk.get("language") and chunk["language"] != "ru":
             continue
 
         chunk_tokens = int(len(chunk["text"].split()) * TOKEN_COEFF)
-        if total_tokens + chunk_tokens > max_tokens:
+        if total_tokens + chunk_tokens > MAX_TOKENS - TOKENS_QUESTION:
             break
 
-        selected_chunks.append(chunk)
+        selected.append(chunk)
         total_tokens += chunk_tokens
-        if len(selected_chunks) >= top_k:
+
+        if len(selected) >= TOP_K:
             break
 
-    return selected_chunks
+    return selected
 
 
 # ----------------------------
-# 3️⃣ Формирование контекста для LLM
+# 3. Построение промпта
 # ----------------------------
 def build_prompt(question, chunks):
-    context = ""
+    ctx = ""
     for c in chunks:
-        context += f"[Источник: {c['source_file']}, символы {c['start_char']}-{c['end_char']}]\n{c['text']}\n\n"
+        ctx += f"[Источник: {c['source_file']}, символы {c['start_char']}-{c['end_char']}]\n"
+        ctx += f"{c['text']}\n\n"
 
-    prompt = (
-        f"Используй контекст (с указанием источника):\n{context}\n\nВопрос: {question}"
-    )
-    return prompt
+    return f"Используй контекст ниже, обязательно указывая источники.\n\n{ctx}\nВопрос: {question}"
 
 
-def generate_similar_questions(question: str, model_llm, n: int = 5) -> list:
-    """
-    Генерирует несколько похожих вопросов.
-    Возвращает список строк.
-    """
+# ----------------------------
+# Генерация похожих вопросов
+# ----------------------------
+def generate_similar_questions(question, model_llm, n=5):
     prompt = (
         f"Сделай {n} переформулировок или похожих вопросов к следующему:\n"
-        f'"{question}"\n'
-        f"Формат вывода: по одному вопросу на строку, без номеров, без пояснений."
+        f'"{question}"\n\n'
+        f"Выводи один вопрос на строку, без нумерации."
     )
 
-    response = model_llm.respond(prompt)
-
-    # Разбиваем на строки и чистим
-    variants = [
-        line.strip("-• ").strip() for line in response.split("\n") if line.strip()
-    ]
-
-    # Оставляем только строки, похожие на вопрос (эвристика)
-    variants = [v for v in variants if len(v) > 5]
-
+    resp = model_llm.respond(prompt)
+    variants = [l.strip("-• ").strip() for l in resp.split("\n") if l.strip()]
     return variants[:n]
 
 
 # ----------------------------
-# 4️⃣ Основная функция запроса
+# 4. Основная функция RAG
 # ----------------------------
-def query_rag(question: str):
-    # инициализация моделей
+def query_rag(question):
     model_embed = lms.embedding_model(EMBEDDING_MODEL_NAME)
     model_llm = lms.llm(LLM_MODEL_NAME)
 
-    # загрузка индекса и чанков
-    index, embeddings, chunks_data = load_embeddings_faiss()
+    index, chunks_data = load_embeddings_hnsw()
 
-    # ➤ 1. Генерируем дополнительные запросы
-    similar_questions = generate_similar_questions(question, model_llm, n=5)
-    all_questions = [question] + similar_questions
+    similar = generate_similar_questions(question, model_llm)
+    all_questions = [question] + similar
 
-    print("\nСгенерированные вариации вопроса:")
+    print("\nСгенерированные варианты запроса:")
+    for v in all_questions:
+        print(" •", v)
+
+    all_chunks = {}
+
     for q in all_questions:
-        print(" •", q)
+        vec = np.array(model_embed.embed(q), dtype="float32").reshape(1, -1)
+        found = select_relevant_chunks(vec, index, chunks_data)
 
-    # ➤ 2. Получаем эмбеддинги всех вопросов
-    query_vectors = []
-    for q in all_questions:
-        raw_vec = model_embed.embed(q)
-        vec = np.array(raw_vec, dtype="float32").reshape(1, -1)
-        faiss.normalize_L2(vec)
-        query_vectors.append(vec)
+        for c in found:
+            key = f"{c['source_file']}:{c['chunk_id']}"
+            all_chunks[key] = c
 
-    # ➤ 3. Запускаем поиск FAISS для каждого вопроса
-    found_chunks = []
-    for vec in query_vectors:
-        chunks = select_relevant_chunks(vec, index, chunks_data)
-        found_chunks.extend(chunks)
+    top_chunks = list(all_chunks.values())[:TOP_K]
 
-    # ➤ 4. Убираем дубликаты чанков по chunk_id + source_file
-    unique = {}
-    for ch in found_chunks:
-        key = f"{ch['source_file']}:{ch['chunk_id']}"
-        unique[key] = ch
-
-    # ➤ 5. Оставляем top_k лучших
-    top_chunks = list(unique.values())[:TOP_K]
-
-    # ➤ 6. Формируем промпт
     prompt = build_prompt(question, top_chunks)
 
-    # ➤ 7. Генерация ответа
-    response = model_llm.respond(
+    answer = model_llm.respond(
         prompt,
         config={"temperature": 0.0},
-        on_prompt_processing_progress=(
-            lambda progress: print(f"{round(progress*100)}% complete")
-        ),
     )
-    return response
+
+    return answer
 
 
 # ----------------------------
-# Пример запуска
+# CLI режим
 # ----------------------------
 if __name__ == "__main__":
     while True:
-        print("Вопрос (выйти: q или й):")
+        print("\nВопрос (q — выход):")
         q = input("> ").strip()
-        if not q:
-            continue
+
         if q.lower() in ["q", "й", "exit", "выход"]:
             break
-        ans = query_rag(q)
-        print("Ответ: ", ans)
+
+        print("\nОтвет:\n")
+        print(query_rag(q))
         print("\n---\n")
