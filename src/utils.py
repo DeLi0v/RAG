@@ -13,9 +13,12 @@ CHUNKS_JSONL = Path("chunks.jsonl")
 EMBEDDINGS_OUT = Path("embeddings.npz")  # сохраним NumPy массив
 EMBEDDINGS_METADATA_OUT = Path("embeddings_meta.json")
 
-TOP_K = 5
+TOP_K = 10
 SIM_THRESHOLD = 0.6
-MAX_CONTEXT_TOKENS = 4096
+MAX_CONTEXT_TOKENS = 1024
+
+TOKENS_QUESTION = 50
+TOKEN_COEFF = 1.3
 
 logging.basicConfig(
     level=logging.INFO,

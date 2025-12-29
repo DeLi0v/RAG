@@ -1,7 +1,6 @@
 numpy
 hnswlib
 lmstudio
-tqdm
 docling
+tqdm
 chardet
-jsonlines

@@ -2,7 +2,7 @@
 
 from src.pipline_chat import query_rag
 
-print("Вопрос (выйти: q или й):")
+print("Вопрос  (q/й — выход):")
 while True:
     q = input("> ").strip()
     if not q:

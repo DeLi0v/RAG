@@ -57,6 +57,104 @@
   },
   {
     "chunk_id": 0,
+    "source_file": "Битрикс. Регламент и инструкция v.1.0.docx",
+    "source_path": "data\\Битрикс. Регламент и инструкция v.1.0.docx",
+    "start_char": 0,
+    "end_char": 3699
+  },
+  {
+    "chunk_id": 1,
+    "source_file": "Битрикс. Регламент и инструкция v.1.0.docx",
+    "source_path": "data\\Битрикс. Регламент и инструкция v.1.0.docx",
+    "start_char": 3700,
+    "end_char": 7415
+  },
+  {
+    "chunk_id": 2,
+    "source_file": "Битрикс. Регламент и инструкция v.1.0.docx",
+    "source_path": "data\\Битрикс. Регламент и инструкция v.1.0.docx",
+    "start_char": 7416,
+    "end_char": 11216
+  },
+  {
+    "chunk_id": 3,
+    "source_file": "Битрикс. Регламент и инструкция v.1.0.docx",
+    "source_path": "data\\Битрикс. Регламент и инструкция v.1.0.docx",
+    "start_char": 11217,
+    "end_char": 14909
+  },
+  {
+    "chunk_id": 4,
+    "source_file": "Битрикс. Регламент и инструкция v.1.0.docx",
+    "source_path": "data\\Битрикс. Регламент и инструкция v.1.0.docx",
+    "start_char": 14910,
+    "end_char": 18425
+  },
+  {
+    "chunk_id": 5,
+    "source_file": "Битрикс. Регламент и инструкция v.1.0.docx",
+    "source_path": "data\\Битрикс. Регламент и инструкция v.1.0.docx",
+    "start_char": 18426,
+    "end_char": 22145
+  },
+  {
+    "chunk_id": 6,
+    "source_file": "Битрикс. Регламент и инструкция v.1.0.docx",
+    "source_path": "data\\Битрикс. Регламент и инструкция v.1.0.docx",
+    "start_char": 22146,
+    "end_char": 25746
+  },
+  {
+    "chunk_id": 7,
+    "source_file": "Битрикс. Регламент и инструкция v.1.0.docx",
+    "source_path": "data\\Битрикс. Регламент и инструкция v.1.0.docx",
+    "start_char": 25747,
+    "end_char": 29300
+  },
+  {
+    "chunk_id": 8,
+    "source_file": "Битрикс. Регламент и инструкция v.1.0.docx",
+    "source_path": "data\\Битрикс. Регламент и инструкция v.1.0.docx",
+    "start_char": 29301,
+    "end_char": 33049
+  },
+  {
+    "chunk_id": 9,
+    "source_file": "Битрикс. Регламент и инструкция v.1.0.docx",
+    "source_path": "data\\Битрикс. Регламент и инструкция v.1.0.docx",
+    "start_char": 33050,
+    "end_char": 36550
+  },
+  {
+    "chunk_id": 10,
+    "source_file": "Битрикс. Регламент и инструкция v.1.0.docx",
+    "source_path": "data\\Битрикс. Регламент и инструкция v.1.0.docx",
+    "start_char": 36551,
+    "end_char": 40093
+  },
+  {
+    "chunk_id": 11,
+    "source_file": "Битрикс. Регламент и инструкция v.1.0.docx",
+    "source_path": "data\\Битрикс. Регламент и инструкция v.1.0.docx",
+    "start_char": 40094,
+    "end_char": 43604
+  },
+  {
+    "chunk_id": 12,
+    "source_file": "Битрикс. Регламент и инструкция v.1.0.docx",
+    "source_path": "data\\Битрикс. Регламент и инструкция v.1.0.docx",
+    "start_char": 43605,
+    "end_char": 47193
+  },
+  {
+    "chunk_id": 13,
+    "source_file": "Битрикс. Регламент и инструкция v.1.0.docx",
+    "source_path": "data\\Битрикс. Регламент и инструкция v.1.0.docx",
+    "start_char": 47194,
+    "end_char": 48083
+  },
+  {
+    "chunk_id": 0,
     "source_file": "Передача файлов между устройствами.docx",
     "source_path": "data\\it\\Передача файлов между устройствами.docx",
     "start_char": 0,
