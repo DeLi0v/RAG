@@ -4,7 +4,7 @@ import hnswlib
 import lmstudio as lms
 from pathlib import Path
 import datetime
-from utils import (
+from src.utils import (
     CHUNKS_JSONL,
     EMBEDDINGS_OUT,
     EMBEDDING_MODEL,
