@@ -20,10 +20,31 @@ MAX_CONTEXT_TOKENS = 1024
 TOKENS_QUESTION = 50
 TOKEN_COEFF = 1.3
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    filename="logs.log",
-    filemode="w",
-)
+# Создаем логгер
 logger = logging.getLogger("app")
+logger.setLevel(logging.DEBUG)
+
+# Удаляем существующие хендлеры
+logger.handlers.clear()
+
+# Форматтер
+formatter = logging.Formatter(
+    "%(asctime)s - %(name)s - %(levelname)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
+)
+
+# Файловый хендлер
+file_handler = logging.FileHandler("logs.log", mode="a", encoding="utf-8")
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(formatter)
+
+# Консольный хендлер
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+console_handler.setFormatter(formatter)
+
+# Добавляем хендлеры
+logger.addHandler(file_handler)
+logger.addHandler(console_handler)
+
+# Отключаем propagation для избежания дублирования
+logger.propagate = False
